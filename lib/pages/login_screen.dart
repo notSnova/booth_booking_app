@@ -1,3 +1,6 @@
+import 'package:booth_booking_app/database/db_helper.dart';
+import 'package:booth_booking_app/pages/register_screen.dart';
+import 'package:booth_booking_app/utility/hash_password.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
@@ -16,6 +19,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String? _usernameError;
+  String? _passwordError;
+
   // dispose controller to free resource
   @override
   void dispose() {
@@ -25,13 +31,53 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // login check
-  void _tryLogin() {
+  void _tryLogin() async {
+    setState(() {
+      _usernameError = null;
+      _passwordError = null;
+    });
+
     if (_formKey.currentState!.validate()) {
-      // if all field valid, proceed
-      log("Username: ${usernameController.text}");
-      log("Password: ${passwordController.text}");
+      final username = usernameController.text.trim();
+      final inputPassword = passwordController.text;
+
+      // username check
+      final user = await DatabaseHelper.instance.getUserByUsername(username);
+      if (user == null) {
+        setState(() {
+          _usernameError = "User not found";
+        });
+        return;
+      }
+
+      // password check
+      final hashedInputPassword = hashPassword(inputPassword);
+      if (user['password'] == hashedInputPassword) {
+        log("Login successful for: $username");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Login successful!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Colors.black,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        // TODO: Navigate to dashboard
+        // Navigator.pushReplacement(...);
+      } else {
+        setState(() {
+          _passwordError = "Incorrect password";
+        });
+      }
     } else {
-      // validation failed
       log("Validation failed");
     }
   }
@@ -66,9 +112,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // username field
                   TextFormField(
                     controller: usernameController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Username',
                       border: OutlineInputBorder(),
+                      errorText: _usernameError,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -83,8 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextFormField(
                     controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Password',
+                      errorText: _passwordError,
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
@@ -113,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 25),
 
-                  // sign up button
+                  // register button
                   RichText(
                     text: TextSpan(
                       text: "Don't have an account? ",
@@ -129,7 +177,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           recognizer:
                               TapGestureRecognizer()
                                 ..onTap = () {
-                                  log('Register here tapped');
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => const RegisterScreen(),
+                                    ),
+                                  );
                                 },
                         ),
                       ],

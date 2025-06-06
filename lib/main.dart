@@ -1,7 +1,13 @@
+// import 'package:booth_booking_app/database/db_helper.dart';
 import 'package:flutter/material.dart';
-import 'pages/home_screen.dart';
+import 'pages/welcome_screen.dart';
 
-void main() {
+void main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final dbHelper = DatabaseHelper.instance;
+  // await dbHelper.deleteDatabaseFile();
+  // await dbHelper.database;
+
   runApp(const ExpoApp());
 }
 
@@ -19,7 +25,7 @@ class ExpoApp extends StatelessWidget {
         ).copyWith(secondary: Colors.black),
         scaffoldBackgroundColor: const Color(0xFFDEDEDE),
       ),
-      home: const HomeScreen(),
+      home: const WelcomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
