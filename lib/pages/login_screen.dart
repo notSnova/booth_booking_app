@@ -1,6 +1,6 @@
 import 'package:booth_booking_app/database/db_helper.dart';
 import 'package:booth_booking_app/pages/register_screen.dart';
-import 'package:booth_booking_app/utility/hash_password.dart';
+import 'package:booth_booking_app/pages/user/user_main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_formKey.currentState!.validate()) {
       final username = usernameController.text.trim();
-      final inputPassword = passwordController.text;
+      final password = passwordController.text;
 
       // username check
       final user = await DatabaseHelper.instance.getUserByUsername(username);
@@ -51,10 +51,10 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       // password check
-      final hashedInputPassword = hashPassword(inputPassword);
-      if (user['password'] == hashedInputPassword) {
+      if (user['password'] == password) {
         log("Login successful for: $username");
 
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
@@ -70,8 +70,17 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
 
-        // TODO: Navigate to dashboard
-        // Navigator.pushReplacement(...);
+        // navigate based on role
+        if (user['role'] == 'admin') {
+          // Navigator.pushReplacementNamed(context, '/adminDashboard');
+          log('admin logged in');
+        } else {
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => UserMainScreen(user: user)),
+          );
+        }
       } else {
         setState(() {
           _passwordError = "Incorrect password";

@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:booth_booking_app/database/db_helper.dart';
 import 'package:booth_booking_app/pages/login_screen.dart';
-import 'package:booth_booking_app/utility/hash_password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -60,12 +59,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'fullName': nameController.text.trim(),
         'email': emailController.text.trim(),
         'phone': phoneController.text.trim(),
-        'password': hashPassword(passwordController.text),
+        'password': passwordController.text,
       };
 
       final id = await DatabaseHelper.instance.insertUser(user);
       log("User registered with id: $id");
-      log("Hashed password: ${hashPassword(passwordController.text)}");
 
       // ignore: use_build_context_synchronously
       Navigator.pop(context);
