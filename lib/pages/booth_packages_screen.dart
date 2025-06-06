@@ -1,6 +1,6 @@
+import 'package:booth_booking_app/widgets/booth_details_modal.dart';
 import 'package:flutter/material.dart';
 import '../models/booth_package.dart';
-import 'login_screen.dart';
 
 class BoothPackagesScreen extends StatelessWidget {
   const BoothPackagesScreen({super.key});
@@ -62,24 +62,26 @@ class BoothPackagesScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        Text(
-                          "RM ${package.price.toStringAsFixed(2)}",
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 8),
                         Text(package.details),
                         const SizedBox(height: 30),
 
-                        // book now button
+                        // view details button
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginScreen(),
+                              // booth details modal
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
                                 ),
+                                builder:
+                                    (context) =>
+                                        BoothDetailsModal(package: package),
                               );
                             },
                             style: FilledButton.styleFrom(
@@ -87,7 +89,7 @@ class BoothPackagesScreen extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             child: const Text(
-                              'Book Now',
+                              'View Details',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

@@ -2,6 +2,7 @@ class BoothPackage {
   final String imagePath;
   final String name;
   final double price;
+  final String size;
   final String details;
   final List<String> additionalItems;
 
@@ -9,6 +10,7 @@ class BoothPackage {
     required this.imagePath,
     required this.name,
     required this.price,
+    required this.size,
     required this.details,
     required this.additionalItems,
   });
@@ -16,44 +18,48 @@ class BoothPackage {
 
 final List<BoothPackage> boothPackages = [
   BoothPackage(
-    imagePath: 'assets/basic-booth.png',
-    name: 'Basic Booth',
-    price: 150.0,
-    details: 'Includes one table, two chairs, and a banner stand.',
-    additionalItems: ['Extra Chair', 'Power Socket', 'Wi-Fi Access'],
-  ),
-  BoothPackage(
-    imagePath: 'assets/premium-booth.png',
-    name: 'Premium Booth',
+    imagePath: 'assets/compact_booth.png',
+    name: 'Compact Booth',
     price: 300.0,
+    size: '2m x 2m',
     details:
-        'Includes everything in Basic Booth, plus two tables, four chairs, lighting, and large signage.',
+        'Come with one table and two chairs. Ideal for individual sellers or startups.',
     additionalItems: [
       'Extra Chair',
-      'Power Socket',
-      'Wi-Fi Access',
-      'TV Display',
-      'Storage Box',
-      'Carpet Flooring',
+      'Extra Table',
+      'Lounge Seating',
+      'Carpet',
+      'Brochure Stand',
     ],
   ),
   BoothPackage(
-    imagePath: 'assets/deluxe-booth.png',
-    name: 'Deluxe Booth',
-    price: 700.0,
+    imagePath: 'assets/standard_booth.png',
+    name: 'Standard Booth',
+    size: '4m x 4m',
+    price: 600.0,
     details:
-        'Includes everything in Premium Booth, plus full setup with furniture, branding, and spotlighting.',
+        'Come with two tables and four chairs. Suitable for growing businesses with larger group.',
     additionalItems: [
       'Extra Chair',
-      'Power Socket',
-      'Wi-Fi Access',
-      'TV Display',
-      'Storage Box',
-      'Carpet Flooring',
-      'Projector',
-      'High-Speed Internet',
-      'Custom Lighting Design',
-      'On-site Technical Support',
+      'Extra Table',
+      'Lounge Seating',
+      'Carpet',
+      'Brochure Stand',
+    ],
+  ),
+  BoothPackage(
+    imagePath: 'assets/extended_booth.png',
+    name: 'Extended Booth',
+    price: 900.0,
+    size: '6m x 6m',
+    details:
+        'Come with 3 tables and eight chairs. Perfect for established businesses looking to maximize brand exposure.',
+    additionalItems: [
+      'Extra Chair',
+      'Extra Table',
+      'Lounge Seating',
+      'Carpet',
+      'Brochure Stand',
     ],
   ),
 ];
