@@ -1,4 +1,4 @@
-import 'package:booth_booking_app/widgets/booth_details_modal.dart';
+import 'package:booth_booking_app/widgets/user_booth_details_modal.dart';
 import 'package:flutter/material.dart';
 import '../../models/booth_package.dart';
 
@@ -82,8 +82,10 @@ class UserBoothPackagesScreen extends StatelessWidget {
                                   ),
                                 ),
                                 builder:
-                                    (context) =>
-                                        BoothDetailsModal(package: package),
+                                    (context) => UserBoothDetailsModal(
+                                      package: package,
+                                      user: user,
+                                    ),
                               );
                             },
                             style: FilledButton.styleFrom(

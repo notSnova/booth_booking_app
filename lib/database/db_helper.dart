@@ -21,7 +21,12 @@ class DatabaseHelper {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    final db = await openDatabase(path, version: 1, onCreate: _createDB);
+
+    // enable foreign key
+    await db.execute('PRAGMA foreign_keys = ON');
+
+    return db;
   }
 
   // create table
@@ -38,6 +43,18 @@ class DatabaseHelper {
         email $textType,
         phone $textType,
         password $textType
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE boothbook (
+        bookid INTEGER PRIMARY KEY AUTOINCREMENT,
+        userid INTEGER NOT NULL,
+        packageName TEXT NOT NULL,
+        packagePrice TEXT NOT NULL,
+        bookDateTime TEXT NOT NULL,
+        additionalItems TEXT,
+        FOREIGN KEY (userid) REFERENCES users (id)
       )
     ''');
   }
@@ -94,6 +111,23 @@ class DatabaseHelper {
     final db = await instance.database;
 
     return db.update('users', user, where: 'id = ?', whereArgs: [user['id']]);
+  }
+
+  // insert booking
+  Future<int> insertBooking(Map<String, dynamic> booking) async {
+    final db = await instance.database;
+    return await db.insert('boothbook', booking);
+  }
+
+  // get user booking
+  Future<List<Map<String, dynamic>>> getUserBookings(int userId) async {
+    final db = await instance.database;
+    return await db.query(
+      'boothbook',
+      where: 'userid = ?',
+      whereArgs: [userId],
+      orderBy: 'bookDateTime DESC',
+    );
   }
 
   // close db

@@ -1,3 +1,4 @@
+import 'package:booth_booking_app/pages/user/user_booking_history_screen.dart';
 import 'package:booth_booking_app/pages/user/user_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:booth_booking_app/pages/user/user_booth_packages_screen.dart';
@@ -31,6 +32,8 @@ class _UserMainScreenState extends State<UserMainScreen> {
         bodyContent = UserBoothPackagesScreen(user: widget.user);
         break;
       case 1:
+        bodyContent = UserBookingHistoryScreen(user: widget.user);
+      case 2:
         bodyContent = UserProfileScreen(user: widget.user);
         break;
       default:
@@ -40,6 +43,7 @@ class _UserMainScreenState extends State<UserMainScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Positioned.fill(child: bodyContent),

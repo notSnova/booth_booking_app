@@ -33,16 +33,22 @@ class UserBottomNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(
-                icon: Icons.store,
+                icon: Icons.book,
                 label: 'Packages',
                 index: 0,
                 isSelected: currentIndex == 0,
               ),
               _buildNavItem(
+                icon: Icons.list,
+                label: 'History',
+                index: 1,
+                isSelected: currentIndex == 1,
+              ),
+              _buildNavItem(
                 icon: Icons.person_outline,
                 label: 'Profile',
                 index: 1,
-                isSelected: currentIndex == 1,
+                isSelected: currentIndex == 2,
               ),
             ],
           ),
