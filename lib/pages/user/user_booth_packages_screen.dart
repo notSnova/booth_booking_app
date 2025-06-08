@@ -18,7 +18,7 @@ class UserBoothPackagesScreen extends StatelessWidget {
       ),
       body: Center(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
           children: [
             SizedBox(height: 30),
             // logo
@@ -26,7 +26,6 @@ class UserBoothPackagesScreen extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 24),
               child: Image.asset('assets/expo-logo.png', height: 80),
             ),
-            const SizedBox(height: 20),
 
             // package card
             for (var package in boothPackages) ...[

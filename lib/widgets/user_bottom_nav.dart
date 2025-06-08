@@ -47,7 +47,7 @@ class UserBottomNav extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.person_outline,
                 label: 'Profile',
-                index: 1,
+                index: 2,
                 isSelected: currentIndex == 2,
               ),
             ],

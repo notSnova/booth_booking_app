@@ -51,7 +51,7 @@ class DatabaseHelper {
         bookid INTEGER PRIMARY KEY AUTOINCREMENT,
         userid INTEGER NOT NULL,
         packageName TEXT NOT NULL,
-        packagePrice TEXT NOT NULL,
+        packagePrice REAL NOT NULL,
         bookDateTime TEXT NOT NULL,
         additionalItems TEXT,
         FOREIGN KEY (userid) REFERENCES users (id)
@@ -127,6 +127,17 @@ class DatabaseHelper {
       where: 'userid = ?',
       whereArgs: [userId],
       orderBy: 'bookDateTime DESC',
+    );
+  }
+
+  // update user booking
+  Future<int> updateBooking(Map<String, dynamic> booking) async {
+    final db = await database;
+    return await db.update(
+      'boothbook',
+      booking,
+      where: 'bookid = ?',
+      whereArgs: [booking['bookid']],
     );
   }
 

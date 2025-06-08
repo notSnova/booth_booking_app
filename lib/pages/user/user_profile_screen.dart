@@ -126,9 +126,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0),
+        child: Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: Form(
@@ -136,13 +137,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  const SizedBox(height: 30),
                   Image.asset(
                     'assets/expo-logo.png',
-                    width: 120,
-                    height: 120,
+                    height: 80,
                     fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 30),
 
                   // username
                   TextFormField(
