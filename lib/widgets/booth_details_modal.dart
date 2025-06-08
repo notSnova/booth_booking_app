@@ -76,6 +76,20 @@ class BoothDetailsModal extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "You need to login first in order to book.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      backgroundColor: Colors.black,
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
                   Navigator.push(
                     context,
                     MaterialPageRoute(

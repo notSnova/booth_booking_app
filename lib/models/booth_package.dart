@@ -53,7 +53,7 @@ final List<BoothPackage> boothPackages = [
     price: 900.0,
     size: '6m x 6m',
     details:
-        'Come with 3 tables and eight chairs. Perfect for established businesses looking to maximize brand exposure.',
+        'Come with 3 tables and eight chairs. Perfect for established businesses to maximize brand exposure.',
     additionalItems: [
       'Extra Chair',
       'Extra Table',
