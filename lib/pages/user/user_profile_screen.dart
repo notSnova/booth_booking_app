@@ -17,6 +17,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   late TextEditingController phoneController;
   late TextEditingController passwordController;
 
+  String? _usernameError; // custom error text for username
+
   bool isEditing = false;
   bool isLoading = true;
   final _formKey = GlobalKey<FormState>();
@@ -69,15 +71,36 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  OutlineInputBorder _errorBorder() {
-    return const OutlineInputBorder(borderSide: BorderSide(color: Colors.red));
-  }
-
   // edit mode
   void _toggleEditMode() async {
     if (isEditing) {
       if (_formKey.currentState!.validate()) {
-        // prepare updated user data
+        final formValid = _formKey.currentState!.validate();
+        final newUsername = usernameController.text.trim();
+
+        // reset username error
+        setState(() {
+          _usernameError = null;
+        });
+
+        if (formValid) {
+          // check if user change their username
+          if (newUsername != widget.user['username']) {
+            final exists = await DatabaseHelper.instance.usernameExists(
+              newUsername,
+            );
+
+            if (exists) {
+              // show error message
+              setState(() {
+                _usernameError = 'Username already taken';
+              });
+              return;
+            }
+          }
+        }
+
+        // if valid, prepare updated user data
         final updatedUser = {
           'id': widget.user['id'],
           'username': usernameController.text.trim(),
@@ -151,10 +174,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Username',
                       labelStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: _blackBorder(),
+                      border: OutlineInputBorder(),
                       disabledBorder: _blackBorder(),
                       focusedBorder: _blackBorder(),
-                      errorBorder: _errorBorder(),
+                      errorText: _usernameError,
                     ),
                     enabled: isEditing,
                     validator: (value) {
@@ -172,10 +195,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Full Name',
                       labelStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: _blackBorder(),
+                      border: OutlineInputBorder(),
                       disabledBorder: _blackBorder(),
                       focusedBorder: _blackBorder(),
-                      errorBorder: _errorBorder(),
                     ),
                     enabled: isEditing,
                     validator:
@@ -192,10 +214,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Email',
                       labelStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: _blackBorder(),
+                      border: OutlineInputBorder(),
                       disabledBorder: _blackBorder(),
                       focusedBorder: _blackBorder(),
-                      errorBorder: _errorBorder(),
                     ),
                     enabled: isEditing,
                     validator: (value) {
@@ -217,10 +238,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Phone',
                       labelStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: _blackBorder(),
+                      border: OutlineInputBorder(),
                       disabledBorder: _blackBorder(),
                       focusedBorder: _blackBorder(),
-                      errorBorder: _errorBorder(),
                     ),
                     enabled: isEditing,
                     validator: (value) {
@@ -241,10 +261,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     decoration: InputDecoration(
                       labelText: 'Password',
                       labelStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: _blackBorder(),
+                      border: OutlineInputBorder(),
                       disabledBorder: _blackBorder(),
                       focusedBorder: _blackBorder(),
-                      errorBorder: _errorBorder(),
                     ),
                     enabled: isEditing,
                     obscureText: true,

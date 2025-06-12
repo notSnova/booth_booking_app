@@ -46,13 +46,25 @@ class DatabaseHelper {
       )
     ''');
 
+    // insert default admin user
+    await db.insert('users', {
+      'username': 'admin',
+      'role': 'admin',
+      'fullName': 'administrator',
+      'email': 'admin@gmail.com',
+      'phone': '0123456789',
+      'password': 'admin123',
+    });
+
+    log('admin has been inserted.');
+
     await db.execute('''
       CREATE TABLE boothbook (
-        bookid INTEGER PRIMARY KEY AUTOINCREMENT,
+        bookid $idType,
         userid INTEGER NOT NULL,
-        packageName TEXT NOT NULL,
+        packageName $textType,
         packagePrice REAL NOT NULL,
-        bookDateTime TEXT NOT NULL,
+        bookDateTime $textType,
         additionalItems TEXT,
         FOREIGN KEY (userid) REFERENCES users (id)
       )
@@ -126,7 +138,7 @@ class DatabaseHelper {
       'boothbook',
       where: 'userid = ?',
       whereArgs: [userId],
-      orderBy: 'bookDateTime DESC',
+      orderBy: 'bookid DESC',
     );
   }
 

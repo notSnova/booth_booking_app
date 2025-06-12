@@ -199,8 +199,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             recognizer:
                                 TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigator.push(
+                                  ..onTap = () async {
+                                    setState(() {
+                                      usernameController.clear();
+                                      passwordController.clear();
+                                      _usernameError = null;
+                                      _passwordError = null;
+
+                                      // unfocus the field
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    });
+
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder:

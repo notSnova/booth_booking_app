@@ -54,7 +54,19 @@ class _UserBookingHistoryScreenState extends State<UserBookingHistoryScreen> {
           }
           final bookings = snapshot.data!;
           if (bookings.isEmpty) {
-            return const Center(child: Text('No booking history.'));
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  Center(
+                    child: Image.asset('assets/expo-logo.png', height: 80),
+                  ),
+                  const SizedBox(height: 30),
+                  const Center(child: Text('No booking history.')),
+                ],
+              ),
+            );
           }
 
           return ListView.builder(
