@@ -127,24 +127,24 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
         ),
         child: Column(
           children: [
-            // image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                package.imagePath,
-                width: double.infinity,
-                height: 180,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 15),
-
             // scrollable content
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        package.imagePath,
+                        width: double.infinity,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+
                     // package name
                     Text(
                       package.name,

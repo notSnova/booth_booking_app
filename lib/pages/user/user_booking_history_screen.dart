@@ -117,13 +117,13 @@ class _UserBookingHistoryScreenState extends State<UserBookingHistoryScreen> {
                   padding: const EdgeInsets.only(
                     top: 10,
                     left: 20,
-                    right: 15,
+                    right: 5,
                     bottom: 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // header and edit button
+                      // header and edit/delete button
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -134,35 +134,157 @@ class _UserBookingHistoryScreenState extends State<UserBookingHistoryScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.black),
-                            onPressed: () async {
-                              final updated = await showModalBottomSheet<bool>(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                builder: (context) {
-                                  return Container(
-                                    height:
-                                        MediaQuery.of(context).size.height *
-                                        0.7,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(25),
-                                      ),
-                                    ),
-                                    child: UserEditBookingModal(
-                                      booking: booking,
-                                    ),
-                                  );
-                                },
-                              );
 
-                              if (updated == true) {
-                                _refreshBookings();
-                              }
-                            },
+                          Row(
+                            // edit button
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.black,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  final updated = await showModalBottomSheet<
+                                    bool
+                                  >(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.transparent,
+                                    builder: (context) {
+                                      return Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.7,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(25),
+                                          ),
+                                        ),
+                                        child: UserEditBookingModal(
+                                          booking: booking,
+                                        ),
+                                      );
+                                    },
+                                  );
+
+                                  if (updated == true) {
+                                    _refreshBookings();
+                                  }
+                                },
+                              ),
+
+                              // delete button
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Colors.red.shade400,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  // show dialog box
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder:
+                                        (context) => AlertDialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                          title: Center(
+                                            child: Text(
+                                              'Delete ${booking['packageName']}?',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
+                                          content: Text(
+                                            'This booking will be permanently deleted and cannot be recovered.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          actionsAlignment:
+                                              MainAxisAlignment.center,
+                                          actionsPadding: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(
+                                                    context,
+                                                    false,
+                                                  ),
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed:
+                                                  () => Navigator.pop(
+                                                    context,
+                                                    true,
+                                                  ),
+                                              style: TextButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.red.shade400,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Delete',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                  );
+
+                                  // if user press delete, delete the data
+                                  if (confirm == true) {
+                                    await DatabaseHelper.instance.deleteBooking(
+                                      booking['bookid'],
+                                    );
+
+                                    _refreshBookings(); // refresh list
+
+                                    ScaffoldMessenger.of(
+                                      // ignore: use_build_context_synchronously
+                                      context,
+                                    ).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          '${booking['packageName']} has been removed from booking history.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        backgroundColor: Colors.black,
+                                        duration: Duration(seconds: 3),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),

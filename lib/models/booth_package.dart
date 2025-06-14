@@ -22,8 +22,7 @@ final List<BoothPackage> boothPackages = [
     name: 'Compact Booth',
     price: 300.0,
     size: '2m x 2m',
-    details:
-        'Come with one table and two chairs. Ideal for individual sellers or startups.',
+    details: 'Budget friendly booth, ideal for individual sellers or startups.',
     additionalItems: {
       'Extra Chair': 15.0,
       'Extra Table': 25.0,
@@ -37,8 +36,7 @@ final List<BoothPackage> boothPackages = [
     name: 'Standard Booth',
     size: '4m x 4m',
     price: 600.0,
-    details:
-        'Come with two tables and four chairs. Suitable for growing businesses with larger group.',
+    details: 'A well balanced option for growing businesses with larger group.',
     additionalItems: {
       'Extra Chair': 15.0,
       'Extra Table': 25.0,
@@ -53,7 +51,7 @@ final List<BoothPackage> boothPackages = [
     price: 900.0,
     size: '6m x 6m',
     details:
-        'Come with 3 tables and eight chairs. Perfect for established businesses to maximize brand exposure.',
+        'Perfect option for established businesses to maximize brand exposure.',
     additionalItems: {
       'Extra Chair': 15.0,
       'Extra Table': 25.0,

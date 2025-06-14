@@ -248,7 +248,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return 'Phone number is required';
                       }
                       if (!RegExp(r'^\d+$').hasMatch(value)) {
-                        return 'Phone must be numeric only';
+                        return 'Phone number must be numeric only';
                       }
                       return null;
                     },

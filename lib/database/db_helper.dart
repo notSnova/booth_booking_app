@@ -67,7 +67,7 @@ class DatabaseHelper {
         bookDateTime $textType,
         additionalItems TEXT,
         totalPrice REAL NOT NULL,
-        FOREIGN KEY (userid) REFERENCES users (id)
+        FOREIGN KEY (userid) REFERENCES users (id) ON DELETE CASCADE
       )
     ''');
   }
@@ -151,6 +151,22 @@ class DatabaseHelper {
       booking,
       where: 'bookid = ?',
       whereArgs: [booking['bookid']],
+    );
+  }
+
+  // delete user (related bookings will be deleted as well - cascade)
+  Future<int> deleteUser(int userId) async {
+    final db = await instance.database;
+    return await db.delete('users', where: 'id = ?', whereArgs: [userId]);
+  }
+
+  // delete booking
+  Future<int> deleteBooking(int bookId) async {
+    final db = await instance.database;
+    return await db.delete(
+      'boothbook',
+      where: 'bookid = ?',
+      whereArgs: [bookId],
     );
   }
 
