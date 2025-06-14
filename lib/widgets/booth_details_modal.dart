@@ -60,7 +60,7 @@ class BoothDetailsModal extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 8,
                 children:
-                    package.additionalItems.map((item) {
+                    package.additionalItems.keys.map((item) {
                       return Chip(
                         label: Text(item),
                         backgroundColor: Colors.grey.shade200,
@@ -103,7 +103,10 @@ class BoothDetailsModal extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   elevation: 4,
                 ),
-                child: const Text('Book Now', style: TextStyle(fontSize: 16)),
+                child: const Text(
+                  'Book Package',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ),
             const SizedBox(height: 10),

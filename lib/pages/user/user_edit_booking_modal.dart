@@ -26,6 +26,7 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
   void initState() {
     super.initState();
 
+    // date and time from database
     final dateTime = DateTime.parse(widget.booking['bookDateTime']);
     dateController = TextEditingController(
       text: DateFormat('d MMMM y').format(dateTime),
@@ -34,27 +35,29 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
       text: DateFormat('h:mm a').format(dateTime),
     );
 
+    // selected package
     selectedPackage = boothPackages.firstWhere(
       (pkg) => pkg.name == widget.booking['packageName'],
       orElse: () => boothPackages.first,
     );
 
+    // get the additional item quantities
     additionalItemsQuantities = {};
     if (widget.booking['additionalItems'] != null) {
       try {
         final Map<String, dynamic> decoded = json.decode(
           widget.booking['additionalItems'],
         );
-        for (var item in selectedPackage.additionalItems) {
-          additionalItemsQuantities[item] = decoded[item] ?? 0;
+        for (var item in selectedPackage.additionalItems.keys) {
+          additionalItemsQuantities[item] = decoded[item]?['qty'] ?? 0;
         }
       } catch (_) {
-        for (var item in selectedPackage.additionalItems) {
+        for (var item in selectedPackage.additionalItems.keys) {
           additionalItemsQuantities[item] = 0;
         }
       }
     } else {
-      for (var item in selectedPackage.additionalItems) {
+      for (var item in selectedPackage.additionalItems.keys) {
         additionalItemsQuantities[item] = 0;
       }
     }
@@ -83,13 +86,30 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
       time.minute,
     );
 
+    // get additional items details
+    Map<String, dynamic> updatedAdditionalItems = {};
+    double additionalItemsTotal = 0.0;
+
+    additionalItemsQuantities.forEach((itemName, qty) {
+      if (qty > 0) {
+        final itemPrice = selectedPackage.additionalItems[itemName] ?? 0.0;
+        final itemTotal = itemPrice * qty;
+        updatedAdditionalItems[itemName] = {'qty': qty, 'total': itemTotal};
+        additionalItemsTotal += itemTotal;
+      }
+    });
+
+    // get new total price
+    final totalPrice = selectedPackage.price + additionalItemsTotal;
+
     // formatted to update into database
     final updatedBooking = {
       ...widget.booking,
       'bookDateTime': updatedDateTime.toIso8601String(),
       'packageName': selectedPackage.name,
       'packagePrice': selectedPackage.price,
-      'additionalItems': json.encode(additionalItemsQuantities),
+      'additionalItems': json.encode(updatedAdditionalItems),
+      'totalPrice': totalPrice,
     };
 
     // update to table
@@ -110,6 +130,16 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
       ),
     );
     log('$updatedBooking');
+  }
+
+  // get total price for ui
+  double getTotalPrice() {
+    double additionalTotal = 0.0;
+    additionalItemsQuantities.forEach((key, qty) {
+      final price = selectedPackage.additionalItems[key] ?? 0.0;
+      additionalTotal += qty * price;
+    });
+    return selectedPackage.price + additionalTotal;
   }
 
   @override
@@ -150,7 +180,7 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
                   setState(() {
                     selectedPackage = newPackage;
                     additionalItemsQuantities.clear();
-                    for (var item in selectedPackage.additionalItems) {
+                    for (var item in selectedPackage.additionalItems.keys) {
                       additionalItemsQuantities[item] = 0;
                     }
                   });
@@ -271,41 +301,70 @@ class _UserEditBookingModalState extends State<UserEditBookingModal> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
-            ...selectedPackage.additionalItems.map((item) {
-              final qty = additionalItemsQuantities[item] ?? 0;
-              return Row(
-                children: [
-                  Expanded(child: Text(item)),
-                  IconButton(
-                    icon: const Icon(Icons.remove_circle_outline),
-                    onPressed: () {
-                      setState(() {
-                        if (qty > 0) {
-                          additionalItemsQuantities[item] = qty - 1;
-                        }
-                      });
-                    },
-                  ),
-                  Container(
-                    width: 30,
-                    alignment: Alignment.center,
-                    child: Text(
-                      qty.toString(),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16),
+            ...selectedPackage.additionalItems.entries.map((entry) {
+              final itemName = entry.key;
+              final itemPrice = entry.value;
+              final qty = additionalItemsQuantities[itemName] ?? 0;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '$itemName (RM ${itemPrice.toStringAsFixed(2)})',
+                        style: const TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add_circle_outline),
-                    onPressed: () {
-                      setState(() {
-                        additionalItemsQuantities[item] = qty + 1;
-                      });
-                    },
-                  ),
-                ],
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          onPressed: () {
+                            setState(() {
+                              if (additionalItemsQuantities[itemName]! > 0) {
+                                additionalItemsQuantities[itemName] =
+                                    additionalItemsQuantities[itemName]! - 1;
+                              }
+                            });
+                          },
+                        ),
+                        Text('$qty', style: const TextStyle(fontSize: 16)),
+                        IconButton(
+                          icon: const Icon(Icons.add_circle_outline),
+                          onPressed: () {
+                            setState(() {
+                              additionalItemsQuantities[itemName] =
+                                  additionalItemsQuantities[itemName]! + 1;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             }),
+            const SizedBox(height: 5),
+
+            // total price
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Divider(thickness: 1.5),
+                const SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    'Total Price: RM ${getTotalPrice().toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 30),
 
             // save button

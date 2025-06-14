@@ -4,7 +4,7 @@ class BoothPackage {
   final double price;
   final String size;
   final String details;
-  final List<String> additionalItems;
+  final Map<String, double> additionalItems;
 
   BoothPackage({
     required this.imagePath,
@@ -24,13 +24,13 @@ final List<BoothPackage> boothPackages = [
     size: '2m x 2m',
     details:
         'Come with one table and two chairs. Ideal for individual sellers or startups.',
-    additionalItems: [
-      'Extra Chair',
-      'Extra Table',
-      'Lounge Seating',
-      'Carpet',
-      'Brochure Stand',
-    ],
+    additionalItems: {
+      'Extra Chair': 15.0,
+      'Extra Table': 25.0,
+      'Lounge Seating': 40.0,
+      'Carpet': 20.0,
+      'Brochure Stand': 10.0,
+    },
   ),
   BoothPackage(
     imagePath: 'assets/standard_booth.png',
@@ -39,13 +39,13 @@ final List<BoothPackage> boothPackages = [
     price: 600.0,
     details:
         'Come with two tables and four chairs. Suitable for growing businesses with larger group.',
-    additionalItems: [
-      'Extra Chair',
-      'Extra Table',
-      'Lounge Seating',
-      'Carpet',
-      'Brochure Stand',
-    ],
+    additionalItems: {
+      'Extra Chair': 15.0,
+      'Extra Table': 25.0,
+      'Lounge Seating': 40.0,
+      'Carpet': 20.0,
+      'Brochure Stand': 10.0,
+    },
   ),
   BoothPackage(
     imagePath: 'assets/extended_booth.png',
@@ -54,12 +54,12 @@ final List<BoothPackage> boothPackages = [
     size: '6m x 6m',
     details:
         'Come with 3 tables and eight chairs. Perfect for established businesses to maximize brand exposure.',
-    additionalItems: [
-      'Extra Chair',
-      'Extra Table',
-      'Lounge Seating',
-      'Carpet',
-      'Brochure Stand',
-    ],
+    additionalItems: {
+      'Extra Chair': 15.0,
+      'Extra Table': 25.0,
+      'Lounge Seating': 40.0,
+      'Carpet': 20.0,
+      'Brochure Stand': 10.0,
+    },
   ),
 ];

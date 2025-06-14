@@ -30,8 +30,10 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
   @override
   void initState() {
     super.initState();
-    // initialize the additional item quantities map only once
-    itemQuantities = {for (var item in widget.package.additionalItems) item: 0};
+    // initialize the additional item with quantity of 0
+    itemQuantities = {
+      for (var item in widget.package.additionalItems.keys) item: 0,
+    };
   }
 
   // date and time picker setup
@@ -97,6 +99,16 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
         timeError = false;
       });
     }
+  }
+
+  // get total price
+  double getTotalPrice() {
+    double additionalItemsTotal = 0;
+    widget.package.additionalItems.forEach((item, price) {
+      final qty = itemQuantities[item] ?? 0;
+      additionalItemsTotal += qty * price;
+    });
+    return widget.package.price + additionalItemsTotal;
   }
 
   @override
@@ -262,8 +274,10 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                       ),
                       Column(
                         children:
-                            package.additionalItems.map((item) {
-                              final quantity = itemQuantities[item] ?? 0;
+                            package.additionalItems.entries.map((entry) {
+                              final itemName = entry.key;
+                              final itemPrice = entry.value;
+                              final quantity = itemQuantities[itemName] ?? 0;
 
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -275,7 +289,7 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        item,
+                                        '$itemName (RM ${itemPrice.toStringAsFixed(2)})',
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     ),
@@ -287,9 +301,11 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                                           ),
                                           onPressed: () {
                                             setState(() {
-                                              if (itemQuantities[item]! > 0) {
-                                                itemQuantities[item] =
-                                                    itemQuantities[item]! - 1;
+                                              if (itemQuantities[itemName]! >
+                                                  0) {
+                                                itemQuantities[itemName] =
+                                                    itemQuantities[itemName]! -
+                                                    1;
                                               }
                                             });
                                           },
@@ -304,8 +320,8 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                                           ),
                                           onPressed: () {
                                             setState(() {
-                                              itemQuantities[item] =
-                                                  itemQuantities[item]! + 1;
+                                              itemQuantities[itemName] =
+                                                  itemQuantities[itemName]! + 1;
                                             });
                                           },
                                         ),
@@ -316,8 +332,27 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                               );
                             }).toList(),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 5),
                     ],
+
+                    // total price
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Divider(thickness: 1.5),
+                        const SizedBox(height: 10),
+                        Center(
+                          child: Text(
+                            'Total Price: RM ${getTotalPrice().toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
 
                     // book package button
                     SizedBox(
@@ -345,13 +380,37 @@ class _UserBoothDetailsModalState extends State<UserBoothDetailsModal> {
                           final formattedDateTime =
                               combinedDateTime.toIso8601String();
 
+                          // calculate total additional item price
+                          Map<String, dynamic> detailedAdditionalItems = {};
+                          double additionalItemsTotal = 0.0;
+
+                          itemQuantities.forEach((itemName, qty) {
+                            final itemPrice =
+                                package.additionalItems[itemName] ?? 0.0;
+                            final itemTotal = itemPrice * qty;
+                            if (qty > 0) {
+                              detailedAdditionalItems[itemName] = {
+                                'qty': qty,
+                                'total': itemTotal,
+                              };
+                              additionalItemsTotal += itemTotal;
+                            }
+                          });
+
+                          // total price (package price + additional items)
+                          final totalPrice =
+                              package.price + additionalItemsTotal;
+
                           // insert data to table
                           final bookingData = {
                             'userid': widget.user['id'],
                             'packageName': widget.package.name,
                             'packagePrice': widget.package.price.toString(),
                             'bookDateTime': formattedDateTime,
-                            'additionalItems': jsonEncode(itemQuantities),
+                            'additionalItems': jsonEncode(
+                              detailedAdditionalItems,
+                            ),
+                            'totalPrice': totalPrice,
                           };
 
                           await DatabaseHelper.instance.insertBooking(

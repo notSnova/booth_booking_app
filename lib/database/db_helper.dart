@@ -66,6 +66,7 @@ class DatabaseHelper {
         packagePrice REAL NOT NULL,
         bookDateTime $textType,
         additionalItems TEXT,
+        totalPrice REAL NOT NULL,
         FOREIGN KEY (userid) REFERENCES users (id)
       )
     ''');

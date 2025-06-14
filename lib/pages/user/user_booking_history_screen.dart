@@ -100,12 +100,11 @@ class _UserBookingHistoryScreenState extends State<UserBookingHistoryScreen> {
                 }
               }
 
+              // filter items with quantities more than 0
               final filteredItems =
                   additionalItems.entries.where((e) {
                     final value = e.value;
-                    if (value is int || value is double) return value > 0;
-                    if (value is String) return value != "0";
-                    return true;
+                    return value['qty'] > 0;
                   }).toList();
 
               return Card(
@@ -191,10 +190,29 @@ class _UserBookingHistoryScreenState extends State<UserBookingHistoryScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ...filteredItems.map(
-                          (item) => Text('${item.key} x${item.value}'),
-                        ),
+                        ...filteredItems.map((item) {
+                          final itemName = item.key;
+                          final itemData = item.value;
+                          final qty = itemData['qty'];
+                          final totalItem = itemData['total'];
+                          return Text(
+                            'x$qty $itemName (RM ${totalItem.toStringAsFixed(2)})',
+                          );
+                        }),
                       ],
+                      const SizedBox(height: 15),
+                      const Text(
+                        'Total Price:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'RM ${booking['totalPrice'].toStringAsFixed(2)}',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ],
                   ),
                 ),
