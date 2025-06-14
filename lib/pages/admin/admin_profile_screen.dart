@@ -2,22 +2,22 @@ import 'package:booth_booking_app/database/db_helper.dart';
 import 'package:booth_booking_app/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 
-class UserProfileScreen extends StatefulWidget {
+class AdminProfileScreen extends StatefulWidget {
   final Map<String, dynamic> user;
-  const UserProfileScreen({super.key, required this.user});
+  const AdminProfileScreen({super.key, required this.user});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<AdminProfileScreen> createState() => _AdminProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _AdminProfileScreenState extends State<AdminProfileScreen> {
   late TextEditingController usernameController;
   late TextEditingController nameController;
   late TextEditingController emailController;
   late TextEditingController phoneController;
   late TextEditingController passwordController;
 
-  String? _usernameError; // custom error text for username
+  String? _usernameError; // custom error message for username
 
   bool isEditing = false;
   bool isLoading = true;
@@ -32,21 +32,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     passwordController = TextEditingController();
 
     super.initState();
-    _loadUserData();
+    _loadAdminData();
   }
 
-  // get user data by id
-  Future<void> _loadUserData() async {
-    final userData = await DatabaseHelper.instance.getUserById(
+  Future<void> _loadAdminData() async {
+    //get user data by id
+    final adminData = await DatabaseHelper.instance.getUserById(
       widget.user['id'],
     );
 
-    if (userData != null) {
-      usernameController.text = userData['username'] ?? '';
-      nameController.text = userData['fullName'] ?? '';
-      emailController.text = userData['email'] ?? '';
-      phoneController.text = userData['phone'] ?? '';
-      passwordController.text = userData['password'] ?? '';
+    if (adminData != null) {
+      usernameController.text = adminData['username'] ?? '';
+      nameController.text = adminData['fullName'] ?? '';
+      emailController.text = adminData['email'] ?? '';
+      phoneController.text = adminData['phone'] ?? '';
+      passwordController.text = adminData['password'] ?? '';
     }
 
     setState(() {
@@ -64,7 +64,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     super.dispose();
   }
 
-  // border color
+  // custom border color
   OutlineInputBorder _blackBorder() {
     return const OutlineInputBorder(
       borderSide: BorderSide(color: Colors.black),
@@ -75,7 +75,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void _toggleEditMode() async {
     if (isEditing) {
       if (_formKey.currentState!.validate()) {
-        final formValid = _formKey.currentState!.validate();
         final newUsername = usernameController.text.trim();
 
         // reset username error
@@ -83,35 +82,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           _usernameError = null;
         });
 
-        if (formValid) {
-          // check if user change their username
-          if (newUsername != widget.user['username']) {
-            final exists = await DatabaseHelper.instance.usernameExists(
-              newUsername,
-            );
-
-            if (exists) {
-              // show error message
-              setState(() {
-                _usernameError = 'Username already taken';
-              });
-              return;
-            }
+        // check if admin change their username
+        if (newUsername != widget.user['username']) {
+          final exists = await DatabaseHelper.instance.usernameExists(
+            newUsername,
+          );
+          if (exists) {
+            // show error message
+            setState(() {
+              _usernameError = 'Username already taken';
+            });
+            return;
           }
         }
 
-        // if valid, prepare updated user data
-        final updatedUser = {
+        // if valid, prepare updated admin data
+        final updatedAdmin = {
           'id': widget.user['id'],
-          'username': usernameController.text.trim(),
+          'username': newUsername,
           'fullName': nameController.text.trim(),
           'email': emailController.text.trim(),
           'phone': phoneController.text.trim(),
           'password': passwordController.text.trim(),
         };
 
-        // call update method
-        await DatabaseHelper.instance.updateUser(updatedUser);
+        // update the data
+        await DatabaseHelper.instance.updateUser(updatedAdmin);
 
         setState(() => isEditing = false);
 
@@ -143,14 +139,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Profile'),
+        title: const Text('Admin Profile'),
         centerTitle: true,
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(30.0, 16.0, 30.0, 16.0),
+        padding: const EdgeInsets.fromLTRB(30, 16, 30, 16),
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
@@ -158,7 +154,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 30),
                   Image.asset(
@@ -180,16 +175,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       errorText: _usernameError,
                     ),
                     enabled: isEditing,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Username is required';
-                      }
-                      return null;
-                    },
+                    validator:
+                        (value) =>
+                            value == null || value.isEmpty
+                                ? 'Username is required'
+                                : null,
                   ),
                   const SizedBox(height: 16),
 
-                  // full name
+                  // fullname
                   TextFormField(
                     controller: nameController,
                     decoration: InputDecoration(
@@ -248,7 +242,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return 'Phone number is required';
                       }
                       if (!RegExp(r'^\d+$').hasMatch(value)) {
-                        return 'Phone number must be numeric only';
+                        return 'Phone must be numeric';
                       }
                       return null;
                     },
@@ -272,15 +266,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Password is required';
                       }
-                      if (value.length < 6) {
-                        return 'Minimum 6 characters required';
-                      }
+                      if (value.length < 6) return 'Minimum 6 characters';
                       return null;
                     },
                   ),
                   const SizedBox(height: 32),
 
-                  // edit/save button
+                  // save or edit button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -300,7 +292,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   const SizedBox(height: 5),
 
-                  // logout
+                  // logout button
                   Padding(
                     padding: const EdgeInsets.only(bottom: 60),
                     child: TextButton(
@@ -311,7 +303,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             builder: (context) => const LoginScreen(),
                           ),
                         );
-
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(

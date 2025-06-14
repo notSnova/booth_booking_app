@@ -1,7 +1,8 @@
 import 'package:booth_booking_app/database/db_helper.dart';
+import 'package:booth_booking_app/pages/admin/admin_main_screen.dart';
 import 'package:booth_booking_app/pages/register_screen.dart';
 import 'package:booth_booking_app/pages/user/user_main_screen.dart';
-import 'package:booth_booking_app/pages/booth_packages_screen.dart';
+import 'package:booth_booking_app/pages/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
@@ -73,8 +74,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
         // navigate based on role
         if (user['role'] == 'admin') {
-          // Navigator.pushReplacementNamed(context, '/adminDashboard');
-          log('admin logged in');
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(
+              builder: (context) => AdminMainScreen(user: user),
+            ),
+          );
         } else {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
@@ -96,14 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      // ignore: deprecated_member_use
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => const BoothPackagesScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const WelcomeScreen()),
           );
         }
       },
